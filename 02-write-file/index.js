@@ -3,7 +3,7 @@ const path = require('path');
 const readline = require('readline');
 
 let rl = readline.createInterface(process.stdin, process.stdout);
-
+let string = '';
 function writeToFile(string) {
   fs.appendFile(
     path.resolve(__dirname, '02-write-file.txt'),
@@ -30,3 +30,4 @@ rl.on('close', () => {
 process.on('SIGINT', () => {
   rl.close();
 });
+writeToFile(string);
