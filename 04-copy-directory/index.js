@@ -1,25 +1,22 @@
 const path = require('path');
 const fs = require('fs');
-const currentDirectory = path.join(__dirname, '04-copy-directory');
+const currentDirectory = path.join(__dirname, 'files');
 const copyDirectory = fs.mkdir(
   path.join(__dirname, 'files-copy'),
   {
     recursive: true,
   },
   (err) => {
-    if (err) {
-      return console.error(err);
-    }
+    if (err) return err;
   },
 );
-return copyDirectory;
+// return copyDirectory;
 
-// fs.copyFile(
-//   path.resolve(__dirname, 'files'),
-//   path.resolve(__dirname, 'files-copy'),
-//   (err) => {
-//     if (err) {
-//       console.log('Error Found:', err);
-//     }
-//   },
-// );
+fs.readdir(currentDirectory, { withFileTypes: true }, (err, files) => {
+  if (err) return err;
+  files
+    .filter((file) => file.isFile())
+    .forEach((file) => {
+      fs.copyFile(file, path.join(copyDirectory, 'file'));
+    });
+});
