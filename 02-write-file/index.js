@@ -13,7 +13,13 @@ function writeToFile(string) {
     },
   );
 }
-
+fs.writeFile(
+  path.resolve(__dirname, '02-write-file.txt'),
+  '',
+  function (error) {
+    if (error) return console.log(error);
+  },
+);
 rl.setPrompt('Please enter your text : \n');
 rl.prompt();
 rl.on('line', (input) => {
