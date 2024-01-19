@@ -10,6 +10,7 @@ async function htmlBuilder() {
   const assets = path.join(__dirname, 'assets');
   const copyAssets = path.join(createDist, 'assets');
   try {
+    await fs.rm(createDist, { force: true, recursive: true });
     const templateHtml = await fs.readFile(
       path.join(__dirname, 'template.html'),
       'UTF-8',
