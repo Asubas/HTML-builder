@@ -6,6 +6,7 @@ async function htmlBuilder() {
   const htmlFIle = path.join(createDist, 'index.html');
   const cssFile = path.join(createDist, 'style.css');
   const components = path.join(__dirname, 'components');
+  const currentDirectoryStyles = path.join(__dirname, 'styles');
   try {
     const templateHtml = await fs.readFile(
       path.join(__dirname, 'template.html'),
@@ -27,6 +28,21 @@ async function htmlBuilder() {
       );
     }
     await fs.appendFile(htmlFIle, templateHtml.replace(regex, componentsFile));
+
+    //css generate
+    const styles = await fs.readdir(currentDirectoryStyles, {
+      withFileTypes: true,
+    });
+    const filtredSyles = styles.filter(
+      (style) => style.isFile() && path.extname(style.name) === '.css',
+    );
+    for (const style of filtredSyles) {
+      const styleContent = await fs.readFile(
+        path.join(currentDirectoryStyles, style.name),
+        'utf-8',
+      );
+      await fs.appendFile(cssFile, styleContent + '\n');
+    }
   } catch (err) {
     return console.log(err);
   }
