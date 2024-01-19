@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 
 async function htmlBuilder() {
   const createDist = path.join(__dirname, 'project-dist');
-  const htmlFIle = path.join(createDist, 'index.html');
+  const htmlFile = path.join(createDist, 'index.html');
   const cssFile = path.join(createDist, 'style.css');
   const components = path.join(__dirname, 'components');
   const currentDirectoryStyles = path.join(__dirname, 'styles');
@@ -21,7 +21,7 @@ async function htmlBuilder() {
       return current.slice(2).slice(0, -2);
     });
     await fs.mkdir(createDist, { recursive: true });
-    await fs.writeFile(htmlFIle, '', { flag: 'w' });
+    await fs.writeFile(htmlFile, '', { flag: 'w' });
     await fs.writeFile(cssFile, '', { flag: 'w' });
     let componentsFile = [];
     for (let i = 0; i < sliceTags.length; i++) {
@@ -34,7 +34,7 @@ async function htmlBuilder() {
     for (let i = 0; i < componentsFile.length; i++) {
       stringBuffer = stringBuffer.replace(tags[i], componentsFile[i]);
     }
-    await fs.writeFile(htmlFIle, stringBuffer);
+    await fs.writeFile(htmlFile, stringBuffer);
 
     //css generate
     const styles = await fs.readdir(currentDirectoryStyles, {
