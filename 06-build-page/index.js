@@ -7,6 +7,8 @@ async function htmlBuilder() {
   const cssFile = path.join(createDist, 'style.css');
   const components = path.join(__dirname, 'components');
   const currentDirectoryStyles = path.join(__dirname, 'styles');
+  const assets = path.join(__dirname, 'assets');
+  const copyAssets = path.join(createDist, 'assets');
   try {
     const templateHtml = await fs.readFile(
       path.join(__dirname, 'template.html'),
@@ -20,29 +22,60 @@ async function htmlBuilder() {
     await fs.mkdir(createDist, { recursive: true });
     await fs.writeFile(htmlFIle, '', { flag: 'w' });
     await fs.writeFile(cssFile, '', { flag: 'w' });
-    let componentsFile;
+    let componentsFile = [];
     for (let i = 0; i < sliceTags.length; i++) {
-      componentsFile = await fs.readFile(
+      componentsFile[i] = await fs.readFile(
         path.join(components, `${sliceTags[i]}.html`),
         'UTF-8',
       );
     }
-    await fs.appendFile(htmlFIle, templateHtml.replace(regex, componentsFile));
+    let stringBuffer = templateHtml;
+    for (let i = 0; i < componentsFile.length; i++) {
+      stringBuffer = stringBuffer.replace(tags[i], componentsFile[i]);
+    }
+    await fs.writeFile(htmlFIle, stringBuffer);
 
     //css generate
     const styles = await fs.readdir(currentDirectoryStyles, {
       withFileTypes: true,
     });
-    const filtredSyles = styles.filter(
+    const filteredStyles = styles.filter(
       (style) => style.isFile() && path.extname(style.name) === '.css',
     );
-    for (const style of filtredSyles) {
+    for (const style of filteredStyles) {
       const styleContent = await fs.readFile(
         path.join(currentDirectoryStyles, style.name),
         'utf-8',
       );
       await fs.appendFile(cssFile, styleContent + '\n');
     }
+    //assets added
+    await fs.mkdir(copyAssets, { recursive: true });
+    const assetsDir = await fs.readdir(assets);
+    await Promise.all(
+      assetsDir.map((currentAssetsDir) => {
+        return fs.mkdir(path.join(copyAssets, currentAssetsDir), {
+          recursive: true,
+        });
+      }),
+    );
+    const subAssetsDirs = await Promise.all(
+      assetsDir.map((copySubAssetsDir) => {
+        return fs.readdir(path.join(assets, copySubAssetsDir));
+      }),
+    );
+    await Promise.all(
+      subAssetsDirs.map((currentSubAssetsDir, index) => {
+        return Promise.all(
+          currentSubAssetsDir.map((currentSubAssetsFile) => {
+            return fs.copyFile(
+              path.join(assets, assetsDir[index], currentSubAssetsFile),
+              path.join(copyAssets, assetsDir[index], currentSubAssetsFile),
+            );
+          }),
+        );
+      }),
+    );
   } catch (err) {
     return console.log(err);
   }
