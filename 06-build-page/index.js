@@ -17,12 +17,10 @@ async function htmlBuilder() {
     );
     const regex = /\{\{[a-zA-Z]+\}\}/g;
     let tags = templateHtml.match(regex);
-    let sliceTags = await tags.map((current) => {
-      return current.slice(2).slice(0, -2);
-    });
+    let sliceTags = tags.map((tag) => tag.slice(2, -2));
     await fs.mkdir(createDist, { recursive: true });
-    await fs.writeFile(htmlFile, '', { flag: 'w' });
-    await fs.writeFile(cssFile, '', { flag: 'w' });
+    await fs.writeFile(htmlFile, '');
+    await fs.writeFile(cssFile, '');
     let componentsFile = [];
     for (let i = 0; i < sliceTags.length; i++) {
       componentsFile[i] = await fs.readFile(
