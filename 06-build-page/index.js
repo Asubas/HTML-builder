@@ -12,14 +12,21 @@ async function htmlBuilder() {
       'UTF-8',
     );
     const regex = /\{\{[a-zA-Z]+\}\}/g;
-    const tags = templateHtml.match(regex);
-    // console.log(tags);
-    // console.log(templateHtml);
+    let tags = templateHtml.match(regex);
+    let sliceTags = await tags.map((current) => {
+      return current.slice(2).slice(0, -2);
+    });
     await fs.mkdir(createDist, { recursive: true });
     await fs.writeFile(htmlFIle, '', { flag: 'w' });
     await fs.writeFile(cssFile, '', { flag: 'w' });
-    await fs.appendFile(htmlFIle, templateHtml.replace(regex, tags));
-    // htmlFIle.replace(tags, fs.readFile(path.join(components, )));
+    let componentsFile;
+    for (let i = 0; i < sliceTags.length; i++) {
+      componentsFile = await fs.readFile(
+        path.join(components, `${sliceTags[i]}.html`),
+        'UTF-8',
+      );
+    }
+    await fs.appendFile(htmlFIle, templateHtml.replace(regex, componentsFile));
   } catch (err) {
     return console.log(err);
   }
