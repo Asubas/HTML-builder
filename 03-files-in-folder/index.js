@@ -12,7 +12,7 @@ fs.readdir(pathToFolder, { withFileTypes: true }, (err, files) => {
         console.log(
           `${path.basename(file.name, path.extname(file.name))} - ${path
             .extname(file.name)
-            .slice(1)} - ${stats.size / 1000}kb`,
+            .slice(1)} - ${stats.size / 1000}kB`,
         );
       });
     });
